@@ -1,0 +1,18 @@
+{
+  "name": "p5-typescript-starter",
+  "version": "1.0.0",
+  "description": "Project to quickly get something working in [p5.js](https://p5js.org/) and [typescript](https://www.typescriptlang.org/)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"browser-sync start --server --no-open -w --files '!sketch/**'\" \" tsc --watch\""
+  },
+  "homepage": "https://github.com/Gaweph/p5-typescript-starter#readme",
+  "devDependencies": {
+    "browser-sync": "^2.24.4",
+    "concurrently": "^3.5.1",
+    "typescript": "^3.0.3"
+  },
+  "dependencies": {
+    "@types/jquery": "^3.3.9"
+  }
+}
