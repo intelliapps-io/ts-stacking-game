@@ -7,6 +7,7 @@ class Sketch {
   height: number;
   width: number;
   level: number;
+  highScore: number = 0;
   hueCounter: number;
   getNextHue =(p: p5) => { 
     if (this.loopHue > 300) { this.loopHue = 0 } else { this.loopHue += 10; }
@@ -25,6 +26,16 @@ class Sketch {
     this.level = 1;
     this.blocks.push(new Block(0 - this.width / 2, p.height - this.height, this.width, this.height, p, { hue: this.getNextHue(p) })); // initialize level 0
     this.blocks.push(new Block(0, this.levelHeight(p), this.width, this.height, p, { hue: this.getNextHue(p) })); // initialize level 1
+  }
+
+  private displayLevel(p: p5) {
+    p.push();
+    p.colorMode(p.HSB);
+    p.textSize(25);
+    p.textStyle(p.BOLD);
+    p.fill(this.loopHue, 40, 100);
+    p.text('Level: ' + this.level, (-p.width / 2) + 10, 40);
+    p.pop();
   }
 
   private slideCurrentLevel(p: p5) {
@@ -69,6 +80,27 @@ class Sketch {
     }
   }
 
+  private displayGameover(p: p5) {
+    if (this.level > this.highScore) this.highScore = this.level;
+    p.push();
+    p.translate(p.width / 2, p.height / 2);
+    p.background(252, 63, 63, 200);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.CENTER);
+    
+    p.textSize(60);
+    p.text('Game Over', 0, -100);
+  
+    p.textSize(25);
+    p.text('Your Score: ' + this.level, -100, 0);
+    p.text('High Score: ' + this.highScore, 100, 0);
+  
+    p.textSize(20);
+    p.textStyle(p.ITALIC);
+    p.text('Click to play again', 0, 100);
+    p.pop();
+  }
+
   public setup(p: p5) {
     p.pixelDensity(1);
     p.angleMode(p.DEGREES);
@@ -80,16 +112,15 @@ class Sketch {
     if (!this.gameOver) {
       p.background(100);
       p.translate(p.width / 2, 0); // center x-axis
+      this.displayLevel(p);
       if (this.levelHeight(p) < p.height / 2) p.translate(0, (-1 * this.levelHeight(p)) + Math.floor(p.height / 2)); // shift scene down when blocks stack too high
       this.slideCurrentLevel(p);
       this.onInput(() => this.nextLevel(p), p);
       this.blocks.forEach(block => block.draw()); // render blocks
     } else {
-      p.background(p.color(255, 0, 0));
-      p.translate((p.width / 2) - 100, p.height / 2); // center x-axis
-      p.fill(255, 255, 255);
-      p.textSize(32);
-      p.text("Game Over!", 0, 0);
+      // p.background(p.color(255, 0, 0));
+      // p.translate((p.width / 2) - 100, p.height / 2); // center x-axis
+      this.displayGameover(p);
       this.onInput(() => this.initialize(p), p);
     }
   }

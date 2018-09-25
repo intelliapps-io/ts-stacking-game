@@ -43,6 +43,7 @@ var Block = (function () {
 var Sketch = (function () {
     function Sketch() {
         var _this = this;
+        this.highScore = 0;
         this.getNextHue = function (p) {
             if (_this.loopHue > 300) {
                 _this.loopHue = 0;
@@ -65,6 +66,15 @@ var Sketch = (function () {
         this.level = 1;
         this.blocks.push(new Block(0 - this.width / 2, p.height - this.height, this.width, this.height, p, { hue: this.getNextHue(p) }));
         this.blocks.push(new Block(0, this.levelHeight(p), this.width, this.height, p, { hue: this.getNextHue(p) }));
+    };
+    Sketch.prototype.displayLevel = function (p) {
+        p.push();
+        p.colorMode(p.HSB);
+        p.textSize(25);
+        p.textStyle(p.BOLD);
+        p.fill(this.loopHue, 40, 100);
+        p.text('Level: ' + this.level, (-p.width / 2) + 10, 40);
+        p.pop();
     };
     Sketch.prototype.slideCurrentLevel = function (p) {
         var block = this.blocks[this.blocks.length - 1];
@@ -119,6 +129,24 @@ var Sketch = (function () {
             this.gameOver = true;
         }
     };
+    Sketch.prototype.displayGameover = function (p) {
+        if (this.level > this.highScore)
+            this.highScore = this.level;
+        p.push();
+        p.translate(p.width / 2, p.height / 2);
+        p.background(252, 63, 63, 200);
+        p.textStyle(p.BOLD);
+        p.textAlign(p.CENTER);
+        p.textSize(60);
+        p.text('Game Over', 0, -100);
+        p.textSize(25);
+        p.text('Your Score: ' + this.level, -100, 0);
+        p.text('High Score: ' + this.highScore, 100, 0);
+        p.textSize(20);
+        p.textStyle(p.ITALIC);
+        p.text('Click to play again', 0, 100);
+        p.pop();
+    };
     Sketch.prototype.setup = function (p) {
         p.pixelDensity(1);
         p.angleMode(p.DEGREES);
@@ -130,6 +158,7 @@ var Sketch = (function () {
         if (!this.gameOver) {
             p.background(100);
             p.translate(p.width / 2, 0);
+            this.displayLevel(p);
             if (this.levelHeight(p) < p.height / 2)
                 p.translate(0, (-1 * this.levelHeight(p)) + Math.floor(p.height / 2));
             this.slideCurrentLevel(p);
@@ -137,11 +166,7 @@ var Sketch = (function () {
             this.blocks.forEach(function (block) { return block.draw(); });
         }
         else {
-            p.background(p.color(255, 0, 0));
-            p.translate((p.width / 2) - 100, p.height / 2);
-            p.fill(255, 255, 255);
-            p.textSize(32);
-            p.text("Game Over!", 0, 0);
+            this.displayGameover(p);
             this.onInput(function () { return _this.initialize(p); }, p);
         }
     };
